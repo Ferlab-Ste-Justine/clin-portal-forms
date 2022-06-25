@@ -48,7 +48,7 @@
 		<dependency>
 			<groupId>com.auth0</groupId>
 			<artifactId>java-jwt</artifactId>
-			<version>3.18.2</version>
+			<version>3.19.2</version>
 		</dependency>
 
 		<!-- This dependency includes the core HAPI-FHIR classes -->
