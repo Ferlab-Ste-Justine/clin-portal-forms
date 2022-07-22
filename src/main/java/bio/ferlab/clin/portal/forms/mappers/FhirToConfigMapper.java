@@ -1,7 +1,7 @@
 package bio.ferlab.clin.portal.forms.mappers;
 
-import bio.ferlab.clin.portal.forms.models.ValueName;
-import bio.ferlab.clin.portal.forms.models.ValueNameExtra;
+import bio.ferlab.clin.portal.forms.models.config.ValueName;
+import bio.ferlab.clin.portal.forms.models.config.ValueNameExtra;
 import org.hl7.fhir.r4.model.CodeSystem;
 import org.hl7.fhir.r4.model.PractitionerRole;
 import org.hl7.fhir.r4.model.ValueSet;
@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
-public class FhirToModelMapper {
+public class FhirToConfigMapper {
   
   public Set<String> mapToAnalyseCodes( CodeSystem analyseCode) {
     return analyseCode.getConcept().stream().map(CodeSystem.ConceptDefinitionComponent::getCode).collect(Collectors.toSet());

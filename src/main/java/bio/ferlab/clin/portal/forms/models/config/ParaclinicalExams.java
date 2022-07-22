@@ -1,4 +1,4 @@
-package bio.ferlab.clin.portal.forms.models;
+package bio.ferlab.clin.portal.forms.models.config;
 
 
 import lombok.AllArgsConstructor;

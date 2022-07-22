@@ -1,0 +1,9 @@
+server:
+  port: 7979
+fhir:
+  url: http://localhost:8080/fhir
+security:
+  issuer: http://localhost:8081/auth/realms/master
+logging:
+  level:
+    bio.ferlab.clin.portal.forms: DEBUG

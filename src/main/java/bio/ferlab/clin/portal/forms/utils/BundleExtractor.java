@@ -19,6 +19,17 @@ public class BundleExtractor {
     this.fhirContext = fhirContext;
     this.bundle = bundle;
   }
+
+  public <T extends IBaseResource> List<T> getAllResourcesOfType(Class<T> clazz) {
+    List<T> results = new ArrayList<>();
+    List<IBaseResource> allRes = BundleUtil.toListOfResources(fhirContext, bundle);
+    for(IBaseResource res : allRes) {
+      if(res.getClass().equals(clazz)){
+        results.add((T)res);
+      }
+    }
+    return results;
+  }
   
   public <T extends IBaseResource> List<T> getNextListOfResourcesOfType(Class<T> clazz) {
     return getListOfResourcesOfTypeAtIndex(fhirContext, bundle, currentIndex++, clazz);

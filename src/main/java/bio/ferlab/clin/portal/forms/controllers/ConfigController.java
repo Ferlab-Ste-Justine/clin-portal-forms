@@ -3,12 +3,11 @@ package bio.ferlab.clin.portal.forms.controllers;
 import bio.ferlab.clin.portal.forms.clients.FhirClient;
 import bio.ferlab.clin.portal.forms.configurations.CacheConfiguration;
 import bio.ferlab.clin.portal.forms.configurations.FhirConfiguration;
-import bio.ferlab.clin.portal.forms.mappers.FhirToModelMapper;
-import bio.ferlab.clin.portal.forms.models.Form;
+import bio.ferlab.clin.portal.forms.mappers.FhirToConfigMapper;
+import bio.ferlab.clin.portal.forms.models.config.Form;
 import bio.ferlab.clin.portal.forms.services.LocaleService;
 import bio.ferlab.clin.portal.forms.utils.BundleExtractor;
 import bio.ferlab.clin.portal.forms.utils.JwtUtils;
-import io.undertow.util.BadRequestException;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
@@ -30,7 +29,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/form")
 @Slf4j
-public class FormController {
+public class ConfigController {
   
   private static final String DEFAULT_HPO = "-default-hpo";
   private static final String DEFAULT_EXAM = "-default-exam";
@@ -48,24 +47,24 @@ public class FormController {
   private final FhirConfiguration fhirConfiguration;
   private final FhirClient fhirClient;
   private final LocaleService localeService;
-  private final FhirToModelMapper fhirToModelMapper;
+  private final FhirToConfigMapper fhirToConfigMapper;
   private final Cache cache;
   
-  public FormController(FhirConfiguration fhirConfiguration,
-                        FhirClient fhirClient,
-                        LocaleService localeService,
-                        FhirToModelMapper fhirToModelMapper,
-                        CacheManager cacheManager) {
+  public ConfigController(FhirConfiguration fhirConfiguration,
+                          FhirClient fhirClient,
+                          LocaleService localeService,
+                          FhirToConfigMapper fhirToConfigMapper,
+                          CacheManager cacheManager) {
     this.fhirConfiguration = fhirConfiguration;
     this.fhirClient = fhirClient;
     this.localeService = localeService;
-    this.fhirToModelMapper = fhirToModelMapper;
+    this.fhirToConfigMapper = fhirToConfigMapper;
     this.cache = cacheManager.getCache(CacheConfiguration.CACHE_NAME);
   }
 
   @GetMapping("/{type}")
   public Form config(@RequestHeader String authorization,
-                       @PathVariable String type) throws BadRequestException {
+                     @PathVariable String type) {
     
     final String lang = localeService.getCurrentLocale();
     final String practitionerId = JwtUtils.getProperty(authorization, JwtUtils.FHIR_PRACTITIONER_ID);
@@ -75,7 +74,7 @@ public class FormController {
     
     // fetch data from FHIR
     Bundle response = this.fhirClient.getGenericClient().search().forResource(PractitionerRole.class)
-        .where(PractitionerRole.PRACTITIONER.hasId(practitionerId)).returnBundle(Bundle.class).execute();
+        .where(PractitionerRole.PRACTITIONER.hasId(practitionerId)).returnBundle(Bundle.class).encodedJson().execute();
 
     BundleExtractor bundleExtractor = new BundleExtractor(fhirClient.getContext(), response);
     List<PractitionerRole> practitionerRoles = bundleExtractor.getNextListOfResourcesOfType(PractitionerRole.class);
@@ -90,15 +89,15 @@ public class FormController {
     // validate the form's type is supported
     if (analyseCode.getConcept().stream().noneMatch(c -> type.equals(c.getCode()))) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Unsupported form type: '%s' available types: %s",
-          type, fhirToModelMapper.mapToAnalyseCodes(analyseCode)));
+          type, fhirToConfigMapper.mapToAnalyseCodes(analyseCode)));
     }
     
     // return form's config
     Form form = new Form();
-    form.getConfig().getPrescribingInstitutions().addAll(fhirToModelMapper.mapToPrescribingInst(practitionerRoles));
-    form.getConfig().getClinicalSigns().getOnsetAge().addAll(fhirToModelMapper.mapToOnsetAge(age, lang));
-    form.getConfig().getHistoryAndDiagnosis().getParentalLinks().addAll(fhirToModelMapper.mapToParentalLinks(parentalLinks, lang));
-    form.getConfig().getHistoryAndDiagnosis().getEthnicities().addAll(fhirToModelMapper.mapToEthnicities(ethnicity, lang));
+    form.getConfig().getPrescribingInstitutions().addAll(fhirToConfigMapper.mapToPrescribingInst(practitionerRoles));
+    form.getConfig().getClinicalSigns().getOnsetAge().addAll(fhirToConfigMapper.mapToOnsetAge(age, lang));
+    form.getConfig().getHistoryAndDiagnosis().getParentalLinks().addAll(fhirToConfigMapper.mapToParentalLinks(parentalLinks, lang));
+    form.getConfig().getHistoryAndDiagnosis().getEthnicities().addAll(fhirToConfigMapper.mapToEthnicities(ethnicity, lang));
     
     // use form default or generic values
     final String formType = type.toLowerCase();
@@ -115,18 +114,18 @@ public class FormController {
   private void applyFormHpByTypeOrDefault(String formType, Form form, CodeSystem all, List<ValueSet> byTypes) {
     Optional<ValueSet> byType = byTypes.stream().filter(vs -> (formType + DEFAULT_HPO).equals(vs.getName())).findFirst();
     if (byType.isPresent()) {
-      form.getConfig().getClinicalSigns().getDefaultList().addAll(fhirToModelMapper.mapToClinicalSigns(byType.get()));
+      form.getConfig().getClinicalSigns().getDefaultList().addAll(fhirToConfigMapper.mapToClinicalSigns(byType.get()));
     } else {
-      form.getConfig().getClinicalSigns().getDefaultList().addAll(fhirToModelMapper.mapToClinicalSigns(all));
+      form.getConfig().getClinicalSigns().getDefaultList().addAll(fhirToConfigMapper.mapToClinicalSigns(all));
     }
   }
 
   private void applyFormObservationByTypeOrDefault(String formType, Form form, String lang, CodeSystem all, List<ValueSet> byTypes) {
     Optional<ValueSet> byType = byTypes.stream().filter(vs -> (formType + DEFAULT_EXAM).equals(vs.getName())).findFirst();
     if (byType.isPresent()) {
-      form.getConfig().getParaclinicalExams().getDefaultList().addAll(fhirToModelMapper.mapToParaclinicalExams(byType.get(), lang));
+      form.getConfig().getParaclinicalExams().getDefaultList().addAll(fhirToConfigMapper.mapToParaclinicalExams(byType.get(), lang));
     } else {
-      form.getConfig().getParaclinicalExams().getDefaultList().addAll(fhirToModelMapper.mapToParaclinicalExams(all, lang));
+      form.getConfig().getParaclinicalExams().getDefaultList().addAll(fhirToConfigMapper.mapToParaclinicalExams(all, lang));
     }
   }
   
@@ -174,7 +173,7 @@ public class FormController {
             .setMethod(Bundle.HTTPVerb.GET);
       }
       
-      Bundle response = fhirClient.getGenericClient().transaction().withBundle(bundle).execute();
+      Bundle response = fhirClient.getGenericClient().transaction().withBundle(bundle).encodedJson().execute();
       BundleExtractor bundleExtractor = new BundleExtractor(fhirClient.getContext(), response);
 
       CodeSystem analyseCode = bundleExtractor.getNextResourcesOfType(CodeSystem.class);

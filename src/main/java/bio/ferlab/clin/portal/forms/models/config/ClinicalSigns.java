@@ -1,4 +1,4 @@
-package bio.ferlab.clin.portal.forms.models;
+package bio.ferlab.clin.portal.forms.models.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class HistoryAndDiagnosis {
-  private List<ValueName> parentalLinks = new ArrayList<>();
-  private List<ValueName> ethnicities = new ArrayList<>();
+public class ClinicalSigns {
+  private List<ValueName> defaultList = new ArrayList<>();
+  private List<ValueName> onsetAge = new ArrayList<>();
 }

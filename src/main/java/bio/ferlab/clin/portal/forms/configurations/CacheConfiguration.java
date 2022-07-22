@@ -1,6 +1,6 @@
 package bio.ferlab.clin.portal.forms.configurations;
 
-import bio.ferlab.clin.portal.forms.controllers.FormController;
+import bio.ferlab.clin.portal.forms.controllers.ConfigController;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -15,12 +15,12 @@ public class CacheConfiguration {
   public static final String CACHE_NAME = "default";
   
   @Autowired
-  private FormController formController;
+  private ConfigController configController;
 
   @Scheduled(fixedRateString = "${cache.eviction}")
   public void clearCaches() {
     // synchronized the fetch and clear cache methods
-    formController.clearCache();
+    configController.clearCache();
   }
   
 }

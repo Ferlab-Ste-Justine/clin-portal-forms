@@ -3,7 +3,7 @@ spring:
     property-naming-strategy: SNAKE_CASE
 fhir:
   url: ${FHIR_URL:https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir}
-  timeout: 5000
+  timeout: 15000
   pool-size: 20
   types-with-default: # will load <type>-default-hpo <type>-default-exam 
     - mmg
@@ -29,3 +29,9 @@ security:
     - "https://portail.qa.cqgc.hsj.rtss.qc.ca"
     - "https://portail.staging.cqgc.hsj.rtss.qc.ca"
     - "https://portail.cqgc.hsj.rtss.qc.ca"
+logging:
+  level:
+    root: ERROR
+    org.springframework.web: ERROR
+    bio.ferlab.clin.portal.forms: INFO
+    org.hibernate: ERROR

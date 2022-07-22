@@ -1,4 +1,4 @@
-package bio.ferlab.clin.portal.forms.models;
+package bio.ferlab.clin.portal.forms.models.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ValueNameExtra {
-  private String name;
-  private String value;
-  private Extra extra;
+public class Form {
+    private Config config = new Config();
 }
