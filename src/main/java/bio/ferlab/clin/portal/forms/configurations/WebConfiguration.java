@@ -28,8 +28,6 @@ public class WebConfiguration implements WebMvcConfigurer {
     registry.addMapping("/**")
         .allowedOrigins(securityConfiguration.getCors().toArray(String[]::new))
         .allowedMethods("*")
-        .allowedHeaders("*")  // request allowed headers
-        .exposedHeaders("*")  // response allowed headers
         .allowCredentials(true) // authorization header
         .maxAge(3600);
   }
