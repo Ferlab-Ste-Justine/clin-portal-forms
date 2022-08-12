@@ -15,7 +15,7 @@
 	<description>Interface between front-end and FHIR for forms submission</description>
 	<properties>
 		<java.version>11</java.version>
-		<hapifhir_version>5.7.4</hapifhir_version>
+		<hapifhir_version>5.7.8</hapifhir_version>
 	</properties>
 	<dependencies>
 		<dependency>
