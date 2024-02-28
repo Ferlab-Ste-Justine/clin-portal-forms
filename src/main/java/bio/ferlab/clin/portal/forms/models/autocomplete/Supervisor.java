@@ -8,4 +8,5 @@ import lombok.NoArgsConstructor;
 public class Supervisor {
   private String id;
   private String name;
+  private String license;
 }

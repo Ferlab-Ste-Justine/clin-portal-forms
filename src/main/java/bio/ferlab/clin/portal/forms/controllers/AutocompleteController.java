@@ -13,9 +13,9 @@ import java.util.List;
 @RequestMapping("/autocomplete")
 @RequiredArgsConstructor
 public class AutocompleteController {
-  
+
   private final FhirClient fhirClient;
-  
+
   @GetMapping("/supervisor/{ep}/{prefix}")
   public List<Supervisor> autocomplete(@RequestHeader String authorization, @PathVariable String ep, @PathVariable String prefix) {
     PractitionerBuilder.validateAccessToEp(fhirClient, authorization, ep);

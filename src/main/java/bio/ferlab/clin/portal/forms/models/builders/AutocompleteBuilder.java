@@ -19,20 +19,20 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class AutocompleteBuilder {
-  
+
   private final FhirClient fhirClient;
-  private final String ep; // assuming ep will be common to all auto-completes 
-  
+  private final String ep; // assuming ep will be common to all auto-completes
+
   private List<Supervisor> supervisors;
-  
+
   public AutocompleteBuilder withSupervisor(String prefix) {
     this.supervisors = new ArrayList<>();
     if (StringUtils.isNotBlank(prefix)) {
       final Bundle bundle = this.fhirClient.findPractitionerAndRoleByEp(ep);
       final BundleExtractor bundleExtractor = new BundleExtractor(fhirClient.getContext(), bundle);
       // from a performance point of view, it's easier to fetch all the practitioner + roles by ep
-      // and filter here instead of asking FHIR to query filter in database. 
-      // considering findPractitionerAndRoleByEp can be cached it will be better 
+      // and filter here instead of asking FHIR to query filter in database.
+      // considering findPractitionerAndRoleByEp can be cached it will be better
       final List<PractitionerRole> roles = bundleExtractor.getAllResourcesOfType(PractitionerRole.class)
         .stream().filter(r -> FhirUtils.isDoctor(r, ep)).toList();
       final List<Practitioner> practitioners = bundleExtractor.getAllResourcesOfType(Practitioner.class);
@@ -50,6 +50,7 @@ public class AutocompleteBuilder {
               final Supervisor s = new Supervisor();
               s.setName(name.getNameAsSingleString());
               s.setId(r.getIdElement().getIdPart());
+              s.setLicense(p.getIdentifierFirstRep().getValue());
               supervisors.add(s);
             }
           }
@@ -58,11 +59,11 @@ public class AutocompleteBuilder {
     }
     return this;
   }
-  
+
   public Result build() {
     return new Result(this.supervisors);
   }
-  
+
   @Getter
   @AllArgsConstructor
   public static class Result {
