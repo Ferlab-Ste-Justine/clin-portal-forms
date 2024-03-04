@@ -19,9 +19,9 @@ import static bio.ferlab.clin.portal.forms.utils.FhirConst.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ObservationsBuilderTest {
-  
+
   final EnhancedRandom random = EnhancedRandomBuilder.aNewEnhancedRandom();
-  
+
   @Test
   void validate_empty_age_code() {
     final List<Signs> signs = random.objects(Signs.class, 5).collect(Collectors.toList());
@@ -29,7 +29,7 @@ class ObservationsBuilderTest {
     signs.get(2).setAgeCode(null);
     final ClinicalSigns clinicalSigns = new ClinicalSigns();
     clinicalSigns.setSigns(signs);
-    ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> { 
+    ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
       new ObservationsBuilder(null, null, null, null, clinicalSigns, new ParaclinicalExams()).validate();
     });
     assertEquals("age_code can't be empty for clinical_signs[2].is_observed = true", exception.getReason());
@@ -50,7 +50,7 @@ class ObservationsBuilderTest {
     assertEquals("value and values can't be both empty for paraclinical_exams[3].interpretation = abnormal", exception.getReason());
     assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
   }
-  
+
   @Test
   void build() {
     final Patient patient = new Patient();
@@ -66,9 +66,9 @@ class ObservationsBuilderTest {
     Signs cs2 = new Signs();
     cs2.setIsObserved(false);
     cs2.setValue("sign");
-    
+
     final List<Signs> signs = List.of(cs1, cs2);
-    
+
     Exams ex1 = new Exams();
     ex1.setCode("code1");
     ex1.setInterpretation(Exams.Interpretation.normal);
@@ -85,13 +85,13 @@ class ObservationsBuilderTest {
 
     Exams ex4 = new Exams();  // should be ignored
     ex4.setInterpretation(Exams.Interpretation.not_done);
-    
+
     final List<Exams> exams = List.of(ex1, ex2, ex3, ex4);
-    
+
     final ClinicalSigns clinicalSigns = new ClinicalSigns();
     clinicalSigns.setSigns(signs);
     clinicalSigns.setComment("foo");
-    
+
     final ParaclinicalExams paraclinicalExams = new ParaclinicalExams();
     paraclinicalExams.setExams(exams);
     paraclinicalExams.setComment("bar");
@@ -105,17 +105,17 @@ class ObservationsBuilderTest {
 
     final Parent father = new Parent();
     father.setParentEnterMoment(Parent.Moment.later);
-    
-    final ObservationsBuilder.Result result = 
+
+    final ObservationsBuilder.Result result =
         new ObservationsBuilder(new SubmitToFhirMapper(), "code", patient, historyAndDiag, clinicalSigns, paraclinicalExams)
         .withFoetus(foetusObservation)
         .withParentAffected(mother)
         .withMother(mother)
         .withFather(father)
         .build();
-    
+
     final List<Observation> obs = result.getObservations();
-    
+
     assertEquals(13, obs.size());
 
     assertObservation(obs.get(0), patient, "DSTA", "exam", ObservationsBuilder.Affected.IND, ANALYSIS_REQUEST_CODE, "code", true);
@@ -153,11 +153,11 @@ class ObservationsBuilderTest {
 
     assertObservation(obs.get(10), patient, "CONS", "exam", null, null, historyAndDiag.getInbreeding(), true);
 
-    assertObservation(obs.get(11), patient, "MFTH", "social-history", null, SYSTEM_MISSING_PARENT, CODE_MISSING_PARENT, false);
+    assertObservation(obs.get(11), patient, "MFTH", "social-history", null, SYSTEM_MISSING_PARENT, CODE_MISSING_PARENT_TEMPORARY, false);
 
     assertEquals("foetusObs",obs.get(12).getId());
  }
-  
+
   private void assertObservation(Observation obs, Patient patient, String code, String category, ObservationsBuilder.Affected affected, String system, Object value, boolean checkInterpretation) {
     assertNotNull(obs.getId());
     assertEquals(FhirUtils.formatResource(patient), obs.getSubject().getReference());
@@ -202,5 +202,5 @@ class ObservationsBuilderTest {
       .build();
     assertEquals(1, result.getObservations().size());
   }
-  
+
 }

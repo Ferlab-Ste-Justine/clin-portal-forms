@@ -14,7 +14,7 @@ public class FhirConst {
   public static final String USER_ROLES_CLIN_PREFIX = "clin";
   public static final String USER_ROLE_PRESCRIBER = "clin_prescriber";
   public static final String USER_ROLE_GENETICIAN = "clin_genetician";
-  
+
   public static final String DEFAULT_HPO_SUFFIX = "-default-hpo";
   public static final String DEFAULT_EXAM_SUFFIX = "-default-exam";
   public static final String ABNORMALITIES_SUFFIX = "-abnormalities";
@@ -44,7 +44,7 @@ public class FhirConst {
 
   public static final String AGE_AT_EVENT_EXT = "http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-event";
   public static final String AGE_AT_ONSET_EXT = "http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-onset";
-  
+
   public static final String SUPERVISOR_EXT = "http://fhir.cqgc.ferlab.bio/StructureDefinition/resident-supervisor";
 
   public static final String ANALYSIS_REQUEST_CODE = "http://fhir.cqgc.ferlab.bio/CodeSystem/analysis-request-code";
@@ -53,17 +53,18 @@ public class FhirConst {
   public static final String OBSERVATION_INTERPRETATION = "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation";
   public static final String OBSERVATION_CODE = "http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code";
   public static final String OBSERVATION_CATEGORY = "http://terminology.hl7.org/CodeSystem/observation-category";
-  
+
   public static final String HP_CODE = "http://fhir.cqgc.ferlab.bio/CodeSystem/hp";
-  
+
   public static final String ETHNICITY_CODE = "http://fhir.cqgc.ferlab.bio/CodeSystem/qc-ethnicity";
 
   public static final String FAMILY_MEMBER = "http://fhir.cqgc.ferlab.bio/StructureDefinition/family-member";
   public static final String FAMILY_MEMBER_MOTHER_CODE = "MTH";
   public static final String FAMILY_MEMBER_FATHER_CODE = "FTH";
-  
+
   public static final String SYSTEM_MISSING_PARENT = "http://fhir.cqgc.ferlab.bio/CodeSystem/missing-parent-status";
-  public static final String CODE_MISSING_PARENT = "TEMPORARY";
+  public static final String CODE_MISSING_PARENT_TEMPORARY = "TEMPORARY";
+  public static final String CODE_MISSING_PARENT_PERMANENT = "NEVER";
 
   public static final String MEDICAL_LICENSE_CODE = "MD";
 

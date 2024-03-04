@@ -21,16 +21,16 @@ import static bio.ferlab.clin.portal.forms.utils.FhirConst.*;
 
 @Component
 public class SubmitToFhirMapper {
-  
+
   public long mapToAge(Date birthDate) {
     // ChronoUnit.YEARS doesn't work, in case you want to use it ...
     return ChronoUnit.DAYS.between(birthDate.toInstant(), Instant.now());
   }
-  
+
   public Enumerations.AdministrativeGender mapToGender(Patient.Gender gender) {
     return Enumerations.AdministrativeGender.fromCode(gender.name());
   }
-  
+
   public Person mapToPerson(Patient patient, org.hl7.fhir.r4.model.Patient linkedPatient) {
     final Person p = new Person();
     // don't use IdType.newRandomUuid() because it creates a conflict when looking for Person/urn:uuid:xxxx
@@ -38,7 +38,7 @@ public class SubmitToFhirMapper {
     this.updatePerson(patient, p, linkedPatient);
     return p;
   }
-  
+
   public org.hl7.fhir.r4.model.Patient mapToPatient(Patient patient) {
     final Reference epRef = FhirUtils.toReference(new Organization().setId(patient.getEp()));
     final org.hl7.fhir.r4.model.Patient p = new org.hl7.fhir.r4.model.Patient();
@@ -47,13 +47,13 @@ public class SubmitToFhirMapper {
     this.updatePatient(patient, p);
     return p;
   }
-  
+
   public void updatePatient(Patient patient, org.hl7.fhir.r4.model.Patient res) {
     final Reference epRef = FhirUtils.toReference(new Organization().setId(patient.getEp()));
     res.setGender(mapToGender(patient.getGender()));
     updateIdentifier(res.getIdentifier(), SYSTEM_MRN, CODE_MRN, patient.getMrn(), epRef);
   }
-  
+
   public void updatePerson(Patient patient, Person person, org.hl7.fhir.r4.model.Patient linkedPatient) {
     updateIdentifier(person.getIdentifier(), SYSTEM_RAMQ, CODE_RAMQ, Utils.removeSpaces(patient.getRamq()), null);
     person.setBirthDate(DateUtils.toDate(patient.getBirthDate()));
@@ -66,7 +66,7 @@ public class SubmitToFhirMapper {
       person.getLink().add(new Person.PersonLinkComponent(new Reference(linkedPatientRef)));
     }
   }
-  
+
   public ServiceRequest mapToAnalysis(String panelCode, org.hl7.fhir.r4.model.Patient patient,
                                       ClinicalImpression clinicalImpression,
                                       ClinicalImpression clinicalImpressionMother,
@@ -131,9 +131,9 @@ public class SubmitToFhirMapper {
       }
     }
   }
-  
-  public ClinicalImpression mapToClinicalImpression(Person person, org.hl7.fhir.r4.model.Patient patient, 
-                                                    List<Observation> observations, 
+
+  public ClinicalImpression mapToClinicalImpression(Person person, org.hl7.fhir.r4.model.Patient patient,
+                                                    List<Observation> observations,
                                                     List<FamilyMemberHistory> histories) {
     final ClinicalImpression clinicalImpression = new ClinicalImpression();
     clinicalImpression.setId(UUID.randomUUID().toString());
@@ -145,14 +145,14 @@ public class SubmitToFhirMapper {
     histories.forEach(o -> clinicalImpression.getInvestigationFirstRep().addItem(FhirUtils.toReference(o)));
     return clinicalImpression;
   }
-  
+
   public List<Observation> mapToObservations(String panelCode,
                                              org.hl7.fhir.r4.model.Patient patient,
                                              Parent mother, Parent father,
                                              HistoryAndDiag historyAndDiag,
                                              ClinicalSigns signs,
                                              ParaclinicalExams exams, ObservationsBuilder.Affected affected) {
-    
+
     List<Observation> all = new ArrayList<>();
 
     Observation dsta = createObservation(patient, "DSTA", "exam", affected, ANALYSIS_REQUEST_CODE, panelCode);
@@ -204,13 +204,13 @@ public class SubmitToFhirMapper {
         all.add(cons);
       }
     }
-    
+
     addParentObservation(all, patient, mother, "MMTH");
     addParentObservation(all, patient, father, "MFTH");
-    
+
     return all;
   }
-  
+
   public List<FamilyMemberHistory> mapToFamilyMemberHistory(HistoryAndDiag historyAndDiag, org.hl7.fhir.r4.model.Patient patient) {
     final List<FamilyMemberHistory> histories = new ArrayList<>();
     for(HealthCondition healthCondition: historyAndDiag.getHealthConditions()) {
@@ -225,7 +225,7 @@ public class SubmitToFhirMapper {
     }
     return histories;
   }
-  
+
   public RelatedPerson mapToRelatedPerson(org.hl7.fhir.r4.model.Patient patient, String motherRamq) {
     final RelatedPerson relatedPerson = new RelatedPerson();
     relatedPerson.setId(UUID.randomUUID().toString());
@@ -235,7 +235,7 @@ public class SubmitToFhirMapper {
     relatedPerson.setActive(true);
     return relatedPerson;
   }
-  
+
   public org.hl7.fhir.r4.model.Patient mapToFoetus(AdditionalInfo additionalInfo, org.hl7.fhir.r4.model.Patient mother) {
     final org.hl7.fhir.r4.model.Patient foetus = new org.hl7.fhir.r4.model.Patient();
     foetus.setId(UUID.randomUUID().toString());
@@ -249,7 +249,7 @@ public class SubmitToFhirMapper {
     foetus.addLink(link);
     return foetus;
   }
-  
+
   public Observation mapToObservation(AdditionalInfo additionalInfo, org.hl7.fhir.r4.model.Patient mother, org.hl7.fhir.r4.model.Patient foetus) {
     final Observation observation = new Observation();
     observation.setId(UUID.randomUUID().toString());
@@ -287,17 +287,17 @@ public class SubmitToFhirMapper {
       serviceRequest.addExtension(familyMemberExt);
     }
   }
-  
+
   private void addParentObservation(List<Observation> observations, org.hl7.fhir.r4.model.Patient patient, Parent parent, String code) {
     if (parent != null && EnumSet.of(Parent.Moment.later, Parent.Moment.never).contains(parent.getParentEnterMoment())) {
-      final Observation obs = createObservation(patient, code, "social-history", null, SYSTEM_MISSING_PARENT, CODE_MISSING_PARENT);
+      final Observation obs = createObservation(patient, code, "social-history", null, SYSTEM_MISSING_PARENT, parent.getParentEnterMoment().toString().equals("later") ? CODE_MISSING_PARENT_TEMPORARY : CODE_MISSING_PARENT_PERMANENT);
       obs.setEffective(new Period().setStart(DateUtils.toDate(LocalDate.now())));
       String sanitizedComment = FhirUtils.sanitizeNoteComment(parent.getParentNoInfoReason());
       obs.addNote(new Annotation().setText(sanitizedComment));
       observations.add(obs);
     }
   }
-  
+
   private String getInterpretationCode(Exams.Interpretation interpretation) {
     switch (interpretation){
       case abnormal:
@@ -308,7 +308,7 @@ public class SubmitToFhirMapper {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "invalid interpretation value: " + interpretation);
     }
   }
-  
+
   private Observation createObservation(org.hl7.fhir.r4.model.Patient patient, String code, String category, ObservationsBuilder.Affected affected, String system, Object value) {
     Observation observation = new Observation();
     observation.setSubject(FhirUtils.toReference(patient));
@@ -334,7 +334,7 @@ public class SubmitToFhirMapper {
     }
     return observation;
   }
-  
+
   private void updateIdentifier(List<Identifier> identifiers, String system, String code, String value, Reference assigner){
     if(StringUtils.isNotBlank(value)) {
       Identifier identifierToUpdate = null;

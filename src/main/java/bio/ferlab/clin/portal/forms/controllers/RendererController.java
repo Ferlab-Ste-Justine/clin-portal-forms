@@ -142,7 +142,7 @@ public class RendererController {
       final var histories = familyHistories.stream()
         .filter(s -> ref.getReference().equals(s.getPatient().getReference()))
         .toList();
-      probandFamily.add(new FamilyMember(null, ref, relation, patient, person, sequencing, impression, obs, histories));
+      probandFamily.add(new FamilyMember(null, ref, relation, patient, person, sequencing, impression, obs, histories, null));
     }
 
     var missingReasons = probandObservations.stream()
@@ -153,7 +153,7 @@ public class RendererController {
       var reason = missingReason.getNoteFirstRep().getText();
       var relation = StringUtils.substring(missingReason.getCode().getCodingFirstRep().getCode(), 1);
       if (StringUtils.isNoneBlank(reason, reason)) {
-        probandFamily.add(new FamilyMember(reason, null, relation, null, null, null, null, null, null));
+        probandFamily.add(new FamilyMember(reason, null, relation, null, null, null, null, null, null, missingReason.getValueCodeableConcept().getCodingFirstRep().getCode()));
       }
     }
 
@@ -211,5 +211,5 @@ public class RendererController {
       .body(resource);
   }
 
-  public record FamilyMember(String missingReason, Reference ref, String relation, Patient patient, Person person, ServiceRequest sequencing, ClinicalImpression clinicalImpression, List<Observation> observations, List<FamilyMemberHistory> familyHistories){}
+  public record FamilyMember(String missingReason, Reference ref, String relation, Patient patient, Person person, ServiceRequest sequencing, ClinicalImpression clinicalImpression, List<Observation> observations, List<FamilyMemberHistory> familyHistories, String missingReasonType){}
 }

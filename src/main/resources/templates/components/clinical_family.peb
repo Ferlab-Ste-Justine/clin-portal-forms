@@ -5,7 +5,7 @@
             <table>
                  {% if familyMember.missingReason is not empty %}
                  <tr>
-                    <td class="col-left">{{ i18n("messages", "clinical_missing_reason") }} : </td>
+                    <td class="col-left">{{ i18n("messages", "clinical_missing_reason") }} {{ i18n("messages", familyMember.missingReasonType) }}: </td>
                     <td>{{ familyMember.missingReason }}</td>
                 </tr>
                 {% else %}
