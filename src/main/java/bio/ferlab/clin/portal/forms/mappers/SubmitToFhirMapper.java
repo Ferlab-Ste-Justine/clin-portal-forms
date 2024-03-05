@@ -290,7 +290,7 @@ public class SubmitToFhirMapper {
 
   private void addParentObservation(List<Observation> observations, org.hl7.fhir.r4.model.Patient patient, Parent parent, String code) {
     if (parent != null && EnumSet.of(Parent.Moment.later, Parent.Moment.never).contains(parent.getParentEnterMoment())) {
-      final Observation obs = createObservation(patient, code, "social-history", null, SYSTEM_MISSING_PARENT, parent.getParentEnterMoment().toString().equals("later") ? CODE_MISSING_PARENT_TEMPORARY : CODE_MISSING_PARENT_PERMANENT);
+      final Observation obs = createObservation(patient, code, "social-history", null, SYSTEM_MISSING_PARENT, Parent.Moment.later.equals(parent.getParentEnterMoment()) ? CODE_MISSING_PARENT_TEMPORARY : CODE_MISSING_PARENT_PERMANENT);
       obs.setEffective(new Period().setStart(DateUtils.toDate(LocalDate.now())));
       String sanitizedComment = FhirUtils.sanitizeNoteComment(parent.getParentNoInfoReason());
       obs.addNote(new Annotation().setText(sanitizedComment));

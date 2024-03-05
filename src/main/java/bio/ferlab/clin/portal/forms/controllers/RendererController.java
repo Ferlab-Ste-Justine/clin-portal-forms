@@ -152,7 +152,7 @@ public class RendererController {
     for(var missingReason : missingReasons) {
       var reason = missingReason.getNoteFirstRep().getText();
       var relation = StringUtils.substring(missingReason.getCode().getCodingFirstRep().getCode(), 1);
-      if (StringUtils.isNoneBlank(reason, reason)) {
+      if (StringUtils.isNoneBlank(reason, relation)) {
         probandFamily.add(new FamilyMember(reason, null, relation, null, null, null, null, null, null, missingReason.getValueCodeableConcept().getCodingFirstRep().getCode()));
       }
     }
