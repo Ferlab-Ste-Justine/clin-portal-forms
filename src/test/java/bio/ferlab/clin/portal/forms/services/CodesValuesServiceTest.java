@@ -24,7 +24,7 @@ class CodesValuesServiceTest {
   private final FhirClient fhirClient = Mockito.mock(FhirClient.class);
   private final FhirConfiguration fhirConfiguration = Mockito.mock(FhirConfiguration.class);
   private final LogOnceService logOnceService = Mockito.mock(LogOnceService.class);
-  private final ApplicationContext applicationContext = Mockito.mock(ApplicationContext.class);
+  private final ApplicationContext applicationContext = Mockito.mock(MockApplicationContext.class);
   private final CodesValuesService service =new CodesValuesService(fhirClient, fhirConfiguration, logOnceService, applicationContext);
 
   @BeforeEach
@@ -76,4 +76,6 @@ class CodesValuesServiceTest {
     assertNotNull(service.getHPOByCode("code0"));
   }
 
+  // dont ask me why ... mockito doesnt like to mock interface
+  private static abstract class MockApplicationContext implements ApplicationContext {}
 }
